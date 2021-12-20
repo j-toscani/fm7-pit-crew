@@ -1,10 +1,12 @@
 {
   "name": "fm7-pit-crew",
   "version": "0.0.0",
+  "main": "main.js",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "electron:start": "electron ."
   },
   "dependencies": {
     "vue": "^3.2.25"
