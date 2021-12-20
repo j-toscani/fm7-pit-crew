@@ -1,0 +1,19 @@
+{
+  "name": "fm7-pit-crew",
+  "version": "1.0.0",
+  "author": "Julian Toscani",
+  "description": "A Dashboard for Forza-Data build with electron",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/j-toscani/fm7-pit-crew.git"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/j-toscani/fm7-pit-crew/issues"
+  },
+  "homepage": "https://github.com/j-toscani/fm7-pit-crew#readme"
+}
