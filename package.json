@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/j-toscani/fm7-pit-crew/issues"
   },
-  "homepage": "https://github.com/j-toscani/fm7-pit-crew#readme"
+  "homepage": "https://github.com/j-toscani/fm7-pit-crew#readme",
+  "devDependencies": {
+    "electron": "^16.0.5"
+  }
 }
