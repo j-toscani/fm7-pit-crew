@@ -4,7 +4,8 @@ window.addEventListener("DOMContentLoaded", () => {
     if (element) element.innerText = text;
   };
 
-  for (const type of ["chrome", "node", "electron"]) {
-    replaceText(`${type}-version`, process.versions[type]);
+  for (const dependency of ["chrome", "node", "electron"]) {
+    console.log(process.versions[dependency]);
+    replaceText(`${dependency}-version`, process.versions[dependency]);
   }
 });
