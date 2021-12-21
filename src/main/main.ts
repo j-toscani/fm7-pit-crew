@@ -1,6 +1,6 @@
-import startUdp from "./udp_connector/_index";
 import { app, BrowserWindow } from "electron";
 import path from "path";
+import startUdp from "./createUdp";
 
 const isDev = process.env.IS_DEV == "true" ? true : false;
 
@@ -23,11 +23,13 @@ function createWindow() {
   if (isDev) {
     win.webContents.openDevTools();
   }
+
+  return win;
 }
 
 app.whenReady().then(() => {
-  createWindow();
-  startUdp();
+  const window = createWindow();
+  startUdp(window);
 
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
