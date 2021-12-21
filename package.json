@@ -13,8 +13,7 @@
     "app:dev": "concurrently -k \"cross-env BROWSER=none npm run dev\" \"npm run electron:dev\""
   },
   "dependencies": {
-    "vue": "^3.2.25",
-    "ws": "^8.4.0"
+    "vue": "^3.2.25"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^2.0.0",
