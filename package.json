@@ -1,21 +1,23 @@
 {
   "name": "fm7-pit-crew",
   "version": "0.0.0",
-  "main": "main.js",
+  "main": "electron/main.js",
   "scripts": {
+    "start": "build && electron:start",
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
     "electron:start": "electron .",
+    "electron:prebuild:dev": "tsc --project tsconfig.electron.json --watch",
     "electron:dev": "wait-on tcp:3000 && cross-env IS_DEV=true electron .",
     "app:dev": "concurrently -k \"cross-env BROWSER=none npm run dev\" \"npm run electron:dev\""
   },
   "dependencies": {
-    "cross-env": "^7.0.3",
-    "vue": "^3.2.25",
-    "wait-on": "^6.0.0"
+    "vue": "^3.2.25"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
+    "wait-on": "^6.0.0",
     "@vitejs/plugin-vue": "^2.0.0",
     "concurrently": "^6.5.1",
     "electron": "^16.0.5",
