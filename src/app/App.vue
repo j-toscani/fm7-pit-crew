@@ -2,7 +2,16 @@
 import { defineComponent } from "@vue/runtime-core";
 
 export default defineComponent({
-  mounted() {},
+  mounted() {
+    window.addEventListener("message", (event) => {
+      const [port] = event.ports;
+      port.onmessage = handleMessage;
+      port.postMessage("start");
+      function handleMessage(message: any) {
+        console.log(message);
+      }
+    });
+  },
 });
 </script>
 
