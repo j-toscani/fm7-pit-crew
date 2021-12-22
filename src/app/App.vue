@@ -1,12 +1,25 @@
-<script setup lang="ts">
-// This starter template is using Vue 3 <script setup> SFCs
-// Check out https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup
-import HelloWorld from './components/HelloWorld.vue'
+<script lang="ts">
+import { defineComponent } from "@vue/runtime-core";
+
+export default defineComponent({
+  mounted() {
+    window.addEventListener("message", (event) => {
+      const [port] = event.ports;
+      port.onmessage = handleMessage;
+      port.postMessage("start");
+      function handleMessage(message: any) {
+        console.log(message);
+      }
+    });
+  },
+});
 </script>
 
 <template>
   <img alt="Vue logo" src="./assets/logo.png" />
-  <HelloWorld msg="Hello Vue 3 + TypeScript + Vite" />
+  <div>
+    <h1>Hello World!</h1>
+  </div>
 </template>
 
 <style>

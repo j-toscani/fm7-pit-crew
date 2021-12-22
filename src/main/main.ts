@@ -1,5 +1,7 @@
-const { app, BrowserWindow } = require("electron");
-const path = require("path");
+import { app, BrowserWindow, MessageChannelMain } from "electron";
+import path from "path";
+import startUdp from "./createUdp";
+
 const isDev = process.env.IS_DEV == "true" ? true : false;
 
 function createWindow() {
@@ -21,10 +23,27 @@ function createWindow() {
   if (isDev) {
     win.webContents.openDevTools();
   }
+
+  return win;
 }
 
 app.whenReady().then(() => {
-  createWindow();
+  const window = createWindow();
+  const { port1, port2 } = new MessageChannelMain();
+
+  let started = false;
+  port2.postMessage("Hello from Main!");
+
+  port2.on("message", (event) => {
+    if (!started) {
+      startUdp(port2);
+      started = true;
+    }
+    console.log("from renderer main world:", event.data);
+  });
+  port2.start();
+
+  window.webContents.postMessage("main-world-port", null, [port1]);
 
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
