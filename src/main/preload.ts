@@ -1,11 +1,13 @@
-window.addEventListener("DOMContentLoaded", () => {
-  const replaceText = (selector: string, text: string) => {
-    const element = document.getElementById(selector);
-    if (element) element.innerText = text;
-  };
+import { ipcRenderer } from "electron";
 
-  for (const dependency of ["chrome", "node", "electron"]) {
-    console.log(process.versions[dependency]);
-    replaceText(`${dependency}-version`, process.versions[dependency] ?? "");
-  }
+// We need to wait until the main world is ready to receive the message before
+// sending the port. We create this promise in the preload so it's guaranteed
+// to register the onload listener before the load event is fired.
+const windowLoaded = new Promise((resolve) => {
+  window.onload = resolve;
+});
+
+ipcRenderer.on("main-world-port", async (event) => {
+  await windowLoaded;
+  window.postMessage("main-world-port", "*", event.ports);
 });
