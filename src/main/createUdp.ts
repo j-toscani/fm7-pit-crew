@@ -1,25 +1,21 @@
 import os from "os";
 import dgram from "dgram";
-import { BrowserWindow } from "electron";
+import { MessagePortMain } from "electron";
 
 const UDP_PORT = 4400;
 const udp = dgram.createSocket("udp4");
 
-export default function startUdp(window: BrowserWindow) {
+export default function startUdp(port: MessagePortMain) {
   udp.on("connect", handleConnect);
   udp.on("close", handleClose);
-  udp.on("message", (message) => console.log(message));
+  udp.on("message", (message) => port.postMessage(message));
 
   function handleClose() {
-    window.webContents.send("closed", Date.now());
+    port.postMessage(Date.now());
   }
 
   function handleConnect() {
-    window.webContents.send("connected", Date.now());
-  }
-
-  function sendAddressInfo(addresses: { home: string; addresses: string[] }) {
-    window.webContents.send("connected", addresses);
+    port.postMessage(Date.now());
   }
 
   udp.bind(UDP_PORT, () => {
@@ -27,7 +23,7 @@ export default function startUdp(window: BrowserWindow) {
     const addresses = getIpAddresses();
     const home = "127.0.0.1";
 
-    sendAddressInfo({ home, addresses });
+    port.postMessage([home, ...addresses]);
   });
 }
 
