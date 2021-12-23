@@ -2,15 +2,35 @@
 import { defineComponent } from "@vue/runtime-core";
 
 export default defineComponent({
-  mounted() {
-    window.addEventListener("message", (event) => {
+  data(): {
+    addresses: string[];
+  } {
+    return {
+      addresses: [],
+    };
+  },
+  methods: {
+    handleMessageEvent(event: MessageEvent) {
       const [port] = event.ports;
-      port.onmessage = handleMessage;
+      let then = Date.now();
+      port.onmessage = (message) => {
+        if (message.data.event === "address") {
+          this.addresses = message.data.data;
+        } else {
+          if (Date.now() - then > 1000) {
+            console.log(message.data);
+            then = Date.now();
+          }
+        }
+      };
       port.postMessage("start");
-      function handleMessage(message: any) {
-        console.log(message);
-      }
-    });
+    },
+  },
+  mounted() {
+    window.addEventListener("message", this.handleMessageEvent);
+  },
+  beforeDestroy() {
+    window.removeEventListener("message", this.handleMessageEvent);
   },
 });
 </script>
@@ -18,7 +38,15 @@ export default defineComponent({
 <template>
   <img alt="Vue logo" src="./assets/logo.png" />
   <div>
-    <h1>Hello World!</h1>
+    <h1>Possible connections:</h1>
+    <table>
+      <tbody>
+        <tr v-for="address in addresses" :key="address">
+          <td>IP: {{ address }}</td>
+          <td>Port: 4400</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
 
