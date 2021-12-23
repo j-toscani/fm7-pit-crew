@@ -1,5 +1,6 @@
 <script lang="ts">
 import { defineComponent } from "@vue/runtime-core";
+import handleMessage from "./lib/handleMessage";
 
 export default defineComponent({
   data(): {
@@ -12,17 +13,7 @@ export default defineComponent({
   methods: {
     handleMessageEvent(event: MessageEvent) {
       const [port] = event.ports;
-      let then = Date.now();
-      port.onmessage = (message) => {
-        if (message.data.event === "address") {
-          this.addresses = message.data.data;
-        } else {
-          if (Date.now() - then > 1000) {
-            console.log(message.data);
-            then = Date.now();
-          }
-        }
-      };
+      port.onmessage = handleMessage;
       port.postMessage("start");
     },
   },
