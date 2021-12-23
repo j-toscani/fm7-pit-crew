@@ -28,6 +28,7 @@ export default function statUdp(communicationPort: MessagePortMain) {
 
 function createUdpHandlers(port: MessagePortMain) {
   const stream = createDataWriteStream();
+  stream.write(createTableHeader());
   const handleMessage = createHandleMessage(port, stream);
 
   function handleStartup() {
@@ -72,21 +73,34 @@ function createHandleMessage(port: MessagePortMain, stream: fs.WriteStream) {
   };
 }
 
-function createDataWriteStream(directory = "race_data", filename = new Date()) {
+function createDataWriteStream(directory = "race_data") {
   const dirPath = path.resolve(__dirname, directory);
-  const filePath = path.resolve(__dirname, directory, filename + ".csv");
+  const filePath = path.resolve(__dirname, directory, createFilename());
   const writeOptions = {
     flags: "a",
     autoClose: false,
   };
 
-  fs.mkdirSync(dirPath);
-  const fileStream = fs.createWriteStream(filePath, writeOptions);
+  try {
+    fs.accessSync(dirPath, fs.constants.F_OK);
+  } catch {
+    fs.mkdirSync(dirPath);
+  }
+  return fs.createWriteStream(filePath, writeOptions);
+}
 
-  const tableHeader = options.map((option) => option.property).join(",");
-  fileStream.write(tableHeader + "\n");
+function createFilename() {
+  const formatter = new Intl.DateTimeFormat("de", {
+    dateStyle: "short",
+  });
+  const now = new Date();
+  return `${formatter
+    .format(now)
+    .replaceAll(".", "")}_${now.getHours()}${now.getMinutes()}.csv`;
+}
 
-  return fileStream;
+function createTableHeader() {
+  return options.map((option) => option.property).join(",") + "\n";
 }
 
 function getIpAddresses() {
