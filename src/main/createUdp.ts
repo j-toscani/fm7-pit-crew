@@ -3,6 +3,12 @@ import dgram from "dgram";
 import { MessagePortMain } from "electron";
 import translateMessage from "./lib/translateMessage";
 
+export type TranslatedTuple = ReturnType<typeof translateMessage>[number];
+
+export type DataOut = {
+  [key in TranslatedTuple[0]]: TranslatedTuple[1];
+};
+
 const UDP_PORT = 4400;
 const udp = dgram.createSocket("udp4");
 
@@ -29,9 +35,7 @@ export default function startUdp(port: MessagePortMain) {
 
   function handleMessage(message: Buffer) {
     const translatedTuples = translateMessage(message);
-    const data = Object.fromEntries(translatedTuples) as {
-      [key in typeof translatedTuples[number][0]]: number;
-    };
+    const data: DataOut = Object.fromEntries(translatedTuples);
 
     if (data.isRaceOn) {
       port.postMessage({
