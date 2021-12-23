@@ -1,6 +1,7 @@
 import os from "os";
 import dgram from "dgram";
 import { MessagePortMain } from "electron";
+import translateMessage from "./lib/translateMessage";
 
 const UDP_PORT = 4400;
 const udp = dgram.createSocket("udp4");
@@ -8,7 +9,15 @@ const udp = dgram.createSocket("udp4");
 export default function startUdp(port: MessagePortMain) {
   udp.on("connect", handleConnect);
   udp.on("close", handleClose);
-  udp.on("message", (message) => port.postMessage(message));
+  udp.on("message", handleMessage);
+
+  udp.bind(UDP_PORT, () => {
+    console.log("UDP started at ", UDP_PORT);
+    const addresses = getIpAddresses();
+    const home = "127.0.0.1";
+
+    port.postMessage({ event: "address", data: [home, ...addresses] });
+  });
 
   function handleClose() {
     port.postMessage(Date.now());
@@ -18,13 +27,19 @@ export default function startUdp(port: MessagePortMain) {
     port.postMessage(Date.now());
   }
 
-  udp.bind(UDP_PORT, () => {
-    console.log("UDP started at ", UDP_PORT);
-    const addresses = getIpAddresses();
-    const home = "127.0.0.1";
+  function handleMessage(message: Buffer) {
+    const translatedTuples = translateMessage(message);
+    const data = Object.fromEntries(translatedTuples) as {
+      [key in typeof translatedTuples[number][0]]: number;
+    };
 
-    port.postMessage([home, ...addresses]);
-  });
+    if (data.isRaceOn) {
+      port.postMessage({
+        event: "data-out",
+        data,
+      });
+    }
+  }
 }
 
 function getIpAddresses() {
