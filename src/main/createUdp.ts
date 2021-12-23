@@ -8,7 +8,7 @@ import translateMessage from "./lib/translateMessage";
 import options from "./lib/options";
 export type TranslatedTuple = ReturnType<typeof translateMessage>[number];
 
-export type DataOut = {
+export type DataOutValue = {
   [key in TranslatedTuple[0]]: TranslatedTuple[1];
 };
 
@@ -35,16 +35,16 @@ function createUdpHandlers(port: MessagePortMain) {
     const addresses = getIpAddresses();
     const home = "127.0.0.1";
 
-    port.postMessage({ event: "address", data: [home, ...addresses] });
+    port.postMessage({ event: "address", value: [home, ...addresses] });
   }
 
   function handleClose() {
-    port.postMessage(Date.now());
+    port.postMessage({ event: "closed", value: Date.now() });
     stream.close();
   }
 
   function handleConnect() {
-    port.postMessage(Date.now());
+    port.postMessage({ event: "connected", value: Date.now() });
   }
 
   return {
@@ -58,13 +58,13 @@ function createUdpHandlers(port: MessagePortMain) {
 function createHandleMessage(port: MessagePortMain, stream: fs.WriteStream) {
   return (message: Buffer) => {
     const translatedTuples = translateMessage(message);
-    const data: DataOut = Object.fromEntries(translatedTuples);
+    const value: DataOutValue = Object.fromEntries(translatedTuples);
 
-    if (data.isRaceOn) {
+    if (value.isRaceOn) {
       const line = translatedTuples.map((tuple) => tuple[1]).join(",") + "\n";
       const message = {
-        event: "data-out",
-        data,
+        event: "dataout",
+        value,
       };
 
       port.postMessage(message);
