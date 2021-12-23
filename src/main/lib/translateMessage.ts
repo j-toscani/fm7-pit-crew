@@ -1,7 +1,7 @@
 import options from "./options";
 
 export default function translateMessage(message: Buffer) {
-  return options.map((option) => decode(message, option));
+  return options.map((option) => [option.property, decode(message, option)]);
 }
 
 function decode(message: Buffer, option: typeof options[number]) {
